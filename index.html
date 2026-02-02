@@ -251,7 +251,7 @@
     let dangerRadius = 360;
 
     // Speed / agressivité (augmente avec noCount)
-    let baseBoost = 1.55;
+    let baseBoost = 1.35;
 
     // Rapetissement
     let noScale = 1;
@@ -259,7 +259,7 @@
     const shrinkFactor = 0.88;
 
     // Téléportation aléatoire
-    const teleportChance = 0.18;
+    const teleportChance = 0.14;
 
     function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
 
@@ -297,9 +297,9 @@
 
       // plus tu es proche, plus ça part vite
       const closeness = clamp((dangerRadius - dist) / dangerRadius, 0, 1);
-      const boost = baseBoost + closeness * 2.2;
+      const boost = baseBoost + closeness * 1.8;
 
-      const step = (dangerRadius - dist) * boost;
+      const step = (dangerRadius - dist) * boost * 0.85;
 
       const currentLeft = (btnRect.left - rect.left) + btnRect.width/2;
       const currentTop  = (btnRect.top  - rect.top ) + btnRect.height/2;
@@ -349,6 +349,7 @@
     window.addEventListener("mousemove", (e) => onPointerMove(e.clientX, e.clientY));
 
     window.addEventListener("touchstart", (e) => {
+      if(e.target === yesBtn) return;
       const t = e.touches[0];
       if(!t) return;
       e.preventDefault();
@@ -374,8 +375,8 @@
       applyNoTransform();
 
       // augmente l'agressivité
-      dangerRadius = Math.min(520, dangerRadius + 25);
-      baseBoost = Math.min(3.2, baseBoost + 0.18);
+      dangerRadius = Math.min(520, dangerRadius + 20);
+      baseBoost = Math.min(3.2, baseBoost + 0.14);
 
       // change texte
       noBtn.textContent = noMessages[Math.min(noCount, noMessages.length-1)];

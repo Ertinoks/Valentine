@@ -29,7 +29,7 @@
       background: radial-gradient(circle at top, var(--pink1), var(--pink2));
     }
 
-    /* Collage photos en fond — PLUS VISIBLE */
+    /* Collage photos en fond */
     .bg-collage{
       position:fixed; inset:-24px;
       z-index:-3;
@@ -50,6 +50,414 @@
       box-shadow: 0 24px 70px rgba(0,0,0,.25) inset;
     }
 
-    /* Voile rose plus léger pour laisser voir les photos */
+    /* Voile rose */
     .pink-veil{
       position:fixed; inset:0;
+      z-index:-2;
+      pointer-events:none;
+      background:
+        radial-gradient(circle at 20% 15%, rgba(255,255,255,.25), transparent 42%),
+        radial-gradient(circle at 70% 80%, rgba(255,255,255,.12), transparent 45%),
+        linear-gradient(180deg, rgba(255,105,180,.12), rgba(255,0,90,.08));
+    }
+
+    /* Vignette */
+    .vignette{
+      position:fixed; inset:0;
+      z-index:-2;
+      pointer-events:none;
+      background: radial-gradient(circle at center, transparent 45%, rgba(0,0,0,.18) 120%);
+      mix-blend-mode: multiply;
+    }
+
+    /* overlay coeurs */
+    .hearts-texture{
+      position:fixed; inset:0;
+      z-index:-1;
+      pointer-events:none;
+      opacity:.16; /* un poil moins pour voir les images */
+      background-image:
+        radial-gradient(circle at 10% 20%, rgba(255,0,90,.55) 0 2px, transparent 3px),
+        radial-gradient(circle at 80% 10%, rgba(255,0,90,.40) 0 2px, transparent 3px),
+        radial-gradient(circle at 30% 80%, rgba(255,0,90,.45) 0 2px, transparent 3px),
+        radial-gradient(circle at 70% 70%, rgba(255,0,90,.35) 0 2px, transparent 3px);
+      filter: blur(.2px);
+    }
+
+    /* Coeurs flottants */
+    .float-layer{
+      position:fixed; inset:0;
+      z-index:0;
+      pointer-events:none;
+      overflow:hidden;
+    }
+    .heart{
+      position:absolute;
+      font-size:18px;
+      opacity:.22;
+      animation: floatUp linear forwards;
+      filter: blur(.15px);
+    }
+    @keyframes floatUp{
+      from{ transform: translateY(20vh) translateX(0) rotate(0deg); }
+      to{ transform: translateY(-120vh) translateX(30px) rotate(18deg); }
+    }
+
+    .card{
+      width:min(610px, 92vw);
+      padding:28px 22px 18px;
+      border-radius:22px;
+      background:var(--card);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 75px rgba(0,0,0,.22);
+      text-align:center;
+      position:relative;
+      z-index:2;
+      border: 1px solid rgba(255,255,255,.55);
+    }
+    h1{
+      margin:0 0 10px;
+      font-size: clamp(24px, 4vw, 40px);
+      line-height:1.12;
+    }
+    p{
+      margin:0 0 18px;
+      font-size: clamp(15px, 2.2vw, 18px);
+      opacity:.9;
+    }
+
+    .buttons{
+      position:relative;
+      height:150px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:14px;
+      margin-top:6px;
+    }
+    button{
+      border:0;
+      padding:14px 18px;
+      border-radius:14px;
+      font-size:18px;
+      cursor:pointer;
+      transition: transform .12s ease, filter .12s ease, opacity .12s ease;
+      user-select:none;
+      box-shadow: 0 12px 22px rgba(0,0,0,.18);
+      touch-action: manipulation;
+    }
+    button:active{ transform: scale(.97); }
+
+    #yesBtn{
+      background: linear-gradient(180deg, var(--yes), var(--yes2));
+      color:white;
+    }
+    #noBtn{
+      background: linear-gradient(180deg, var(--no), var(--no2));
+      color:white;
+      position:absolute;
+      left: 72%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(1);
+      will-change: left, top, transform, opacity;
+    }
+
+    .result{
+      display:none;
+      margin-top:14px;
+      font-size:18px;
+    }
+    .result strong{ font-size:26px; letter-spacing:.2px; }
+
+    .hint{
+      margin-top:14px;
+      font-size:12.5px;
+      opacity:.72;
+    }
+
+    /* Confetti */
+    .confetti{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+      display:none;
+      z-index:3;
+    }
+    .piece{
+      position:absolute;
+      width:10px;
+      height:14px;
+      opacity:.9;
+      top:-20px;
+      animation: fall linear forwards;
+      transform: rotate(0deg);
+      border-radius:2px;
+    }
+    @keyframes fall{
+      to{ transform: translateY(110vh) rotate(720deg); }
+    }
+  </style>
+</head>
+
+<body>
+  <!--images en fond -->
+  <div class="bg-collage" aria-hidden="true">
+    <div style="background-image:url('./bouquet1.png')"></div>
+    <div style="background-image:url('./bouquet2.png')"></div>
+    <div style="background-image:url('./diner.jpg')"></div>
+    <div style="background-image:url('./noel2025.jpg')"></div>
+  </div>
+  <div class="pink-veil" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+  <div class="hearts-texture" aria-hidden="true"></div>
+  <div class="float-layer" id="floatLayer" aria-hidden="true"></div>
+
+  <div class="card" id="card">
+    <h1>Julie-Anne, acceptes-tu d'être ma Valentine ? 💘</h1>
+    <p>Promis, j’ai prévu un truc cool 😌</p>
+
+    <div class="buttons" id="arena">
+      <button id="yesBtn">Oui 😍</button>
+      <button id="noBtn">Non 🙃</button>
+    </div>
+
+    <div class="result" id="result">
+      <strong>let’s goooooo 🥰</strong>
+      <div style="margin-top:8px">hâte d’y être mon cœur 💞</div>
+      <div class="hint">(envoie-moi le screen pour être sûr 🥺👀)</div>
+    </div>
+
+    <div class="hint">Essaie de répondre non pour voir 😈</div>
+  </div>
+
+  <div class="confetti" id="confetti"></div>
+
+  <script>
+    const noBtn = document.getElementById("noBtn");
+    const yesBtn = document.getElementById("yesBtn");
+    const arena = document.getElementById("arena");
+    const result = document.getElementById("result");
+    const confetti = document.getElementById("confetti");
+    const floatLayer = document.getElementById("floatLayer");
+
+    /* -------------------------
+       Fuite du non
+    -------------------------- */
+
+    const padding = 10;
+
+    // Distance d’activation (très large)
+    let dangerRadius = 360;
+
+    // Speed / agressivité (augmente avec noCount)
+    let baseBoost = 1.55;
+
+    // Rapetissement
+    let noScale = 1;
+    const minScale = 0.42;
+    const shrinkFactor = 0.88;
+
+    // Téléportation aléatoire
+    const teleportChance = 0.18;
+
+    function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+
+    function applyNoTransform(){
+      noBtn.style.transform = `translate(-50%, -50%) scale(${noScale})`;
+    }
+
+    function randomPositionWithinArena(){
+      const rect = arena.getBoundingClientRect();
+      const btnRect = noBtn.getBoundingClientRect();
+      const minX = padding + btnRect.width/2;
+      const maxX = rect.width - padding - btnRect.width/2;
+      const minY = padding + btnRect.height/2;
+      const maxY = rect.height - padding - btnRect.height/2;
+
+      const x = minX + Math.random() * (maxX - minX);
+      const y = minY + Math.random() * (maxY - minY);
+      noBtn.style.left = `${x}px`;
+      noBtn.style.top  = `${y}px`;
+      applyNoTransform();
+    }
+
+    function moveNoButtonAwayFrom(x, y){
+      const rect = arena.getBoundingClientRect();
+      const btnRect = noBtn.getBoundingClientRect();
+
+      const bx = btnRect.left + btnRect.width/2;
+      const by = btnRect.top  + btnRect.height/2;
+
+      let vx = bx - x;
+      let vy = by - y;
+
+      const dist = Math.hypot(vx, vy) || 1;
+      vx /= dist; vy /= dist;
+
+      // plus tu es proche, plus ça part vite
+      const closeness = clamp((dangerRadius - dist) / dangerRadius, 0, 1);
+      const boost = baseBoost + closeness * 2.2;
+
+      const step = (dangerRadius - dist) * boost;
+
+      const currentLeft = (btnRect.left - rect.left) + btnRect.width/2;
+      const currentTop  = (btnRect.top  - rect.top ) + btnRect.height/2;
+
+      let newLeft = currentLeft + vx * step;
+      let newTop  = currentTop  + vy * step;
+
+      const minX = padding + btnRect.width/2;
+      const maxX = rect.width - padding - btnRect.width/2;
+      const minY = padding + btnRect.height/2;
+      const maxY = rect.height - padding - btnRect.height/2;
+
+      newLeft = clamp(newLeft, minX, maxX);
+      newTop  = clamp(newTop,  minY, maxY);
+
+      noBtn.style.left = `${newLeft}px`;
+      noBtn.style.top  = `${newTop}px`;
+      applyNoTransform();
+    }
+
+    function updateNoOpacity(distance){
+      // transparent si proche, normal si loin
+      const t = clamp(distance / dangerRadius, 0, 1);
+      const op = 0.35 + (t * 0.65); // proche ~0.35 ; loin ~1
+      noBtn.style.opacity = op.toFixed(2);
+    }
+
+    function onPointerMove(clientX, clientY){
+      const btnRect = noBtn.getBoundingClientRect();
+      const bx = btnRect.left + btnRect.width/2;
+      const by = btnRect.top  + btnRect.height/2;
+      const d = Math.hypot(bx - clientX, by - clientY);
+
+      updateNoOpacity(d);
+
+      // mode impossible : s'active très souvent
+      if(d < dangerRadius){
+        // petite chance de téléportation quand on est vraiment proche
+        if(d < 140 && Math.random() < teleportChance){
+          randomPositionWithinArena();
+          return;
+        }
+        moveNoButtonAwayFrom(clientX, clientY);
+      }
+    }
+
+    window.addEventListener("mousemove", (e) => onPointerMove(e.clientX, e.clientY));
+
+    window.addEventListener("touchstart", (e) => {
+      const t = e.touches[0];
+      if(!t) return;
+      e.preventDefault();
+      onPointerMove(t.clientX, t.clientY);
+    }, {passive:false});
+
+    const noMessages = [
+      "Non 🙃",
+      "Même pas 😏",
+      "Trop tard 👀",
+      "Impossible 😈",
+      "Tu n’y arriveras pas 😭",
+      "Ok… stop 😤"
+    ];
+    let noCount = 0;
+
+    noBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      noCount++;
+
+      // rapetisse + devient plus “impossible” à chaque clic
+      noScale = Math.max(minScale, noScale * shrinkFactor);
+      applyNoTransform();
+
+      // augmente l'agressivité
+      dangerRadius = Math.min(520, dangerRadius + 25);
+      baseBoost = Math.min(3.2, baseBoost + 0.18);
+
+      // change texte
+      noBtn.textContent = noMessages[Math.min(noCount, noMessages.length-1)];
+
+      // téléporte souvent au clic
+      if(Math.random() < 0.55){
+        randomPositionWithinArena();
+      }else{
+        moveNoButtonAwayFrom(
+          e.clientX || (window.innerWidth/2),
+          e.clientY || (window.innerHeight/2)
+        );
+      }
+    });
+
+    yesBtn.addEventListener("click", () => {
+      arena.style.display = "none";
+      result.style.display = "block";
+      launchConfetti();
+    });
+
+    function launchConfetti(){
+      confetti.style.display = "block";
+      confetti.innerHTML = "";
+      const pieces = 140;
+      for(let i=0;i<pieces;i++){
+        const p = document.createElement("div");
+        p.className = "piece";
+        p.style.left = Math.random() * 100 + "vw";
+        p.style.animationDuration = (2.3 + Math.random()*2.7) + "s";
+        p.style.animationDelay = (Math.random()*0.25) + "s";
+        p.style.transform = `rotate(${Math.random()*360}deg)`;
+        p.style.background = `hsl(${Math.random()*360}, 90%, 60%)`;
+        p.style.width = (6 + Math.random()*10) + "px";
+        p.style.height = (8 + Math.random()*14) + "px";
+        confetti.appendChild(p);
+      }
+      setTimeout(() => {
+        confetti.style.display = "none";
+        confetti.innerHTML = "";
+      }, 5200);
+    }
+
+    // Coeurs flottants
+    function spawnHeart(){
+      const h = document.createElement("div");
+      h.className = "heart";
+      h.textContent = (Math.random() < 0.5) ? "💗" : "💕";
+      h.style.left = Math.random() * 100 + "vw";
+      h.style.bottom = (-10 - Math.random()*20) + "px";
+      h.style.fontSize = (14 + Math.random()*18) + "px";
+      h.style.animationDuration = (6 + Math.random()*8) + "s";
+      h.style.opacity = (0.10 + Math.random()*0.22).toFixed(2);
+      floatLayer.appendChild(h);
+      setTimeout(() => h.remove(), 16000);
+    }
+    setInterval(spawnHeart, 360);
+    for(let i=0;i<12;i++) spawnHeart();
+
+    // Position initiale du "Non"
+    (function initNo(){
+      const rect = arena.getBoundingClientRect();
+      noBtn.style.left = `${rect.width * 0.72}px`;
+      noBtn.style.top  = `${rect.height * 0.50}px`;
+      applyNoTransform();
+    })();
+
+    window.addEventListener("resize", () => {
+      const rect = arena.getBoundingClientRect();
+      const btnRect = noBtn.getBoundingClientRect();
+      const minX = padding + btnRect.width/2;
+      const maxX = rect.width - padding - btnRect.width/2;
+      const minY = padding + btnRect.height/2;
+      const maxY = rect.height - padding - btnRect.height/2;
+
+      const left = clamp(parseFloat(noBtn.style.left || rect.width*0.7), minX, maxX);
+      const top  = clamp(parseFloat(noBtn.style.top  || rect.height*0.5), minY, maxY);
+
+      noBtn.style.left = `${left}px`;
+      noBtn.style.top  = `${top}px`;
+      applyNoTransform();
+    });
+  </script>
+</body>
+</html>
